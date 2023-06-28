@@ -1,0 +1,80 @@
+{% extends "my_app/layout.html" %}
+
+{% block body %}
+
+<div class="container">
+    <header class="index-header">
+        <div id='map'></div>
+        <div class="main-search">
+            <form action="{% url 'find' %}" method="post">
+                {% csrf_token %}
+                {{ form }}
+            </form>
+            {% if header == 'Sorry no results found!' or header == 'Results for your search!' %}
+            <h3 class="title">{{ header }} <a href="{% url 'reset' %}" style="color:red">reset</a>
+            </h3>
+            {% else %}
+            <h3 class="title">{{ header }}</h3>
+            {% endif %}
+        </div>
+    </header>
+
+    <section class="index-body">
+        <script>
+            mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtYW5iYXJzZWdoeWFuIiwiYSI6ImNsOXJzZmJzZTBqYjIzd21kbDQ0anExb24ifQ.bIuDExySY92cE1D3CzcWdw';
+            const map = new mapboxgl.Map({
+                container: 'map', // container ID
+                style: 'mapbox://styles/armanbarseghyan/clhv8iymy00sh01rhbsyzgfup', // style URL
+                center: [-118.466625, 34.215975], // starting position [lng, lat]
+                zoom: 10, // starting zoom
+            });
+        </script>
+        {% for listing in listings %}
+        <div class="listing">
+
+            <a href="{% url 'listing-details' listing.id %}">
+                <div>
+                    {% if listing.image %}
+                    <img class="list-img" alt="home" src="{{ listing.image.url }}" data-lot="{{ listing.lot }}"
+                        data-long="{{ listing.long }}" data-id="{{ listing.id }}" data-address="{{ listing.address }}">
+                    {% else %}
+                    <img class="list-img" alt="home"
+                        src="https://www.seekpng.com/png/detail/339-3392184_home-icons-blue-home-icon-blue-png.png"
+                        data-lot="{{ listing.lot }}" data-long="{{ listing.long }}" data-id="{{ listing.id }}"
+                        data-address="{{ listing.address }}">
+                    {% endif %}
+                </div>
+                <div class="listing-content">
+                    <p>Rent: ${{ listing.price }}</p>
+                    <p>{{ listing.address }}</p>
+                </div>
+            </a>
+
+            {% if user.is_authenticated %}
+            <div class="save-wrapper">
+                {% if request.user in listing.saved.all %}
+                <img class="save heart" data-listid="{{ listing.id }}"
+                    src="https://cdn-icons-png.flaticon.com/512/1076/1076984.png" alt="unsave">
+                {% else %}
+                <img class="save" data-listid="{{ listing.id }}"
+                    src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png" alt="save">
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+        <script>
+            document.querySelectorAll('.list-img').forEach(el => {
+                const popup = new mapboxgl.Popup().setHTML(`<a style='outline: none' href='${el.dataset.id}'>${el.dataset.address}</a>`)
+                const marker = new mapboxgl.Marker()
+                    .setLngLat([`${el.dataset.long}`, `${el.dataset.lot}`])
+                    .setPopup(popup)
+                    .addTo(map);
+            })
+        </script>
+    </section>
+</div>
+
+
+{% endblock %}

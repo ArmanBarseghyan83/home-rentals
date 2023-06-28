@@ -1,0 +1,184 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Rentals</title>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css' rel='stylesheet' />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{% static 'my_app/styles.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="navbar">
+        {% if user.is_authenticated %}
+        <b><a class="link" href="{% url 'index' %}">{{ user }}</a></b>
+        <div class="dropdown">
+            <a class="link" href="{% url 'reset' %}">All Homes</a>
+        </div>
+        <div class="dropdown">
+            <a class="link" href="{% url 'saved' %}">Saved</a>
+        </div>
+
+        <div class="dropdown">
+            <button class="link">Filter</button>
+            <div class="dropdown-content">
+                <form action="filter" method="post">
+                    {% csrf_token %}
+                    <div class="input-wrapper">
+                        <div class="radio">
+                            <label for="house">house</label>
+                            {% if is_house %}
+                            <input type="checkbox" name="house" id="house" value="house" checked>
+                            {% else %}
+                            <input type="checkbox" name="house" id="house" value="house">
+                            {% endif %}
+                        </div>
+                        <div class="radio">
+                            <label for="condo">condo</label>
+                            {% if is_condo %}
+                            <input type="checkbox" name="condo" id="condo" value="condo" checked>
+                            {% else %}
+                            <input type="checkbox" name="condo" id="condo" value="condo">
+                            {% endif %}
+                        </div>
+                        <div class="radio">
+                            <label for="townhouse">townhouse</label>
+                            {% if is_townhouse %}
+                            <input type="checkbox" name="townhouse" id="townhouse" value="townhouse" checked>
+                            {% else %}
+                            <input type="checkbox" name="townhouse" id="townhouse" value="townhouse">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="input-wrapper">
+                        <input class="filter-input" type="number" name="bed" placeholder="bed"
+                            value="{{ filter_data.bed }}">
+                        <input class="filter-input" type="number" name="bath" placeholder="bath"
+                            value="{{ filter_data.bath }}">
+                    </div>
+                    <div class="input-wrapper">
+                        <input class="filter-input" type="number" name="min" placeholder="min $"
+                            value="{{ filter_data.min }}">
+                        <input class="filter-input" type="number" name="max" placeholder="max $"
+                            value="{{ filter_data.max }}">
+                    </div>
+                    <div class="input-wrapper">
+                        <input class="filter-input" type="number" name="min_year_built" placeholder="min year"
+                            value="{{ filter_data.min_year_built }}">
+                        <input class="filter-input" type="number" name="max_year_built" placeholder="max year"
+                            value="{{ filter_data.max_year_built }}">
+                    </div>
+                    <div class="input-wrapper">
+                        <input class="filter-btn" type="submit">
+                        <a class="filter-btn" href="{% url 'reset' %}">Reset</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="link">Rentals</button>
+            <div class="dropdown-content">
+                <p><a class="link" href="{% url 'create-listing' %}">List a rental</a></p>
+                <p><a class="link" href="{% url 'user-listings' %}">My Listings</a></p>
+                <p><a class="link" href="{% url 'requests' %}">Requests</a></p>
+            </div>
+        </div>
+        <div class="log-out dropdown"><a class="link" href="{% url 'logout' %}">Log Out</a></div>
+        {% else %}
+        <div><a class="link" href="{% url 'login' %}">Log In</a></div>
+        <div><a class="link" href="{% url 'register' %}">Register</a></div>
+        {% endif %}
+        {% if user.is_authenticated %}
+        <div class="open-dropdown dropdown">
+            <button class="link">
+                <div class="dropdown-lines">
+                    <div></div>
+                    <div></div>
+                </div>
+            </button>
+            <div class="dropdown-content">
+                <div class="dropdown-mobile"><a class="link-mobile" href="{% url 'reset' %}">All Homes</a></div>
+                <div class="dropdown-mobile"><a class="link-mobile" href="{% url 'saved' %}">Saved</a></div>
+                <div class="dropdown-mobile"><a class="link-mobile" href="{% url 'create-listing' %}">List a rental</a>
+                </div>
+                <div class="dropdown-mobile"><a class="link-mobile" href="{% url 'user-listings' %}">My Listings</a>
+                </div>
+                <div class="dropdown-mobile"><a class="link-mobile" href="{% url 'requests' %}">Requests</a></div>
+                <div class="open-dropdown dropdown-mobile">
+                    <a class="link-mobile">Filter</a>
+                    <div class="dropdown-content-mobile">
+                        <form action="filter" method="post">
+                            {% csrf_token %}
+                            <div class="input-wrapper">
+                                <div class="radio">
+                                    <label for="house">house</label>
+                                    {% if is_house %}
+                                    <input type="checkbox" name="house" id="house" value="house" checked>
+                                    {% else %}
+                                    <input type="checkbox" name="house" id="house" value="house">
+                                    {% endif %}
+                                </div>
+                                <div class="radio">
+                                    <label for="condo">condo</label>
+                                    {% if is_condo %}
+                                    <input type="checkbox" name="condo" id="condo" value="condo" checked>
+                                    {% else %}
+                                    <input type="checkbox" name="condo" id="condo" value="condo">
+                                    {% endif %}
+                                </div>
+                                <div class="radio">
+                                    <label for="lot/land">lot/land</label>
+                                    {% if is_lot %}
+                                    <input type="checkbox" name="lot/land" id="lot/land" value="lot/land" checked>
+                                    {% else %}
+                                    <input type="checkbox" name="lot/land" id="lot/land" value="lot/land">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="input-wrapper">
+                                <input class="filter-input" type="number" name="bed" placeholder="bed"
+                                    value="{{ filter_data.bed }}">
+                                <input class="filter-input" type="number" name="bath" placeholder="bath"
+                                    value="{{ filter_data.bath }}">
+                            </div>
+                            <div class="input-wrapper">
+                                <input class="filter-input" type="number" name="min" placeholder="min $"
+                                    value="{{ filter_data.min }}">
+                                <input class="filter-input" type="number" name="max" placeholder="max $"
+                                    value="{{ filter_data.max }}">
+                            </div>
+                            <div class="input-wrapper">
+                                <input class="filter-input" type="number" name="min_year_built" placeholder="min year"
+                                    value="{{ filter_data.min_year_built }}">
+                                <input class="filter-input" type="number" name="max_year_built" placeholder="max year"
+                                    value="{{ filter_data.max_year_built }}">
+                            </div>
+                            <div class="input-wrapper">
+                                <input class="filter-btn" type="submit" name="" id="">
+                                <a class="filter-btn" href="{% url 'reset' %}">Reset</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="dropdown-mobile"><a class="link-mobile" href="{% url 'logout' %}">Log Out</a></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="body">
+        {% block body %}
+        {% endblock %}
+    </div>
+    <script src="{% static 'my_app/app.js' %}"></script>
+</body>
+
+</html>

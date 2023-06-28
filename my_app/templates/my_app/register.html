@@ -1,0 +1,22 @@
+{% extends "my_app/layout.html" %}
+
+{% block body %}
+<div class="form-body-wrapper">
+    <h2>Register</h2>
+
+    {% if message %}
+    <div>{{ message }}</div>
+    {% endif %}
+
+    <form class="form-body" action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <input class="form-control" autofocus type="text" name="username" placeholder="Username" required>
+        <input class="form-control" type="email" name="email" placeholder="Email Address" required>
+        <input class="form-control" type="password" name="password" placeholder="Password" required>
+        <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password" required>
+        <input class="form-button" type="submit" value="Register">
+    </form>
+
+</div>
+
+{% endblock %}
