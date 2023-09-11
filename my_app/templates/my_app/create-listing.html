@@ -1,0 +1,20 @@
+{% extends "my_app/layout.html" %}
+
+{% block body %}
+
+<div class="form-body-wrapper">
+
+    <h1 class="create-header">List a rental</h1>
+
+    {% if message %}
+    <div>{{ message }}</div>
+    {% endif %}
+
+    <form class="form-body" action="{% url 'create-listing' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="form-button" type="submit">
+    </form>
+
+</div>
+{% endblock %}

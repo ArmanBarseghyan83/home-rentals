@@ -1,0 +1,32 @@
+{% extends "my_app/layout.html" %}
+
+{% block body %}
+
+<h1 class="title">Requests For Your Listings</h1>
+
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
+
+<div class="requests">
+    {% for request in requests %}
+    <div>
+        <div>
+            <h4>{{ request.sender }}</h4>
+            <p>{{ request.body }}</p>
+            <p>For: {{ request.subject }}</p>
+            <p>On: {{ request.date }}</p>
+        </div>
+
+        <div> {% if request.listing.image %}
+            <img class="request-img" src="{{ request.listing.image.url }}" alt="">
+            {% else %}
+            <img class="request-img"
+                src="https://www.seekpng.com/png/detail/339-3392184_home-icons-blue-home-icon-blue-png.png" alt="">
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

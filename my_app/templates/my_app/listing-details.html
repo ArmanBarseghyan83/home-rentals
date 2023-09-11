@@ -1,0 +1,99 @@
+{% extends "my_app/layout.html" %}
+
+{% block body %}
+
+<section class="listing-details-container">
+    {% if message %}
+    <p>{{ message }}</p>
+    {% else %}
+    <div class="listing-details-img">{% if listing.image %}
+        <img src="{{ listing.image.url }}" alt="home">
+        {% else %}
+        <img src="https://www.seekpng.com/png/detail/339-3392184_home-icons-blue-home-icon-blue-png.png" alt="home">
+        {% endif %}
+    </div>
+
+    <div id='map2' data-lot="{{ listing.lot }}" data-long="{{ listing.long }}">
+    </div>
+
+    <div class="listing-details-content">
+
+        <div>
+            <h2>{{ listing.address }}</h2>
+            <hr>
+        </div>
+        <div>
+            <h4>Rent: ${{ listing.price }} | Bed: {{ listing.bed }} | Bath: {{ listing.bath }}</h4>
+            <h4>Year Built: {{ listing.year_built }}</h4>
+            <h4>Home Type: {{ listing.home_type }}</h4>
+        </div>
+        <div>
+            <h4>Home Overview</h4>
+            <p>{{ listing.description }}</p>
+        </div>
+    </div>
+
+    <div class="listing-request-wrapper">
+        {% if listing.owner != request.user %}
+        {% if is_request_sent %}
+        <h4 style="color: rgb(2, 206, 2);">You have sent a tour request!</h4>
+        {% endif %}
+        <h4>Request a Tour</h4>
+        <form id="request-form" action="{% url 'listing-details' listing.id %}" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="date">Date: </label>
+                <input type="date" name="date" id="date" required>
+            </div>
+            <div>
+                <label for="email">Email: </label>
+                <input type="email" name="email" id="email" value="{{ user.email }}" required>
+            </div>
+            <div>
+                <label for="subject">Subject: </label>
+                <input type="text" name="subject" id="address" value="{{ listing.address }}" required>
+            </div>
+            <div>
+                <textarea name="body" cols="30" rows="5" required>Hi, I would like to take a tour </textarea>
+            </div>
+            <div><button class="request-btn" type="submit">Send a Request</button></div>
+        </form>
+        {% else %}
+        <h4>Tour Requests</h4>
+        <div class="listing-details-requests">
+            {% for tour_request in tour_requests %}
+            <div>
+                <h4>{{ tour_request.sender }}</h4>
+                <p>{{ tour_request.body }}</p>
+                <p>For: {{ tour_request.subject }}</p>
+                <p>On: {{ tour_request.date }}</p>
+            </div>
+            <hr>
+            {% empty %}
+            <P>No requests yet!</P>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</section>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtYW5iYXJzZWdoeWFuIiwiYSI6ImNsOXJzZmJzZTBqYjIzd21kbDQ0anExb24ifQ.bIuDExySY92cE1D3CzcWdw';
+
+    lot = document.querySelector('#map2').dataset.lot
+    long = document.querySelector('#map2').dataset.long
+    const map = new mapboxgl.Map({
+        container: 'map2',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [`${long}`, `${lot}`],
+        zoom: 11,
+    });
+
+    const marker = new mapboxgl.Marker()
+        .setLngLat([`${long}`, `${lot}`])
+        .addTo(map);
+
+</script>
+
+
+{% endblock %}

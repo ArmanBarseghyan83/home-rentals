@@ -1,0 +1,30 @@
+{% extends "my_app/layout.html" %}
+
+{% block body %}
+<div class="form-body-wrapper">
+    <h2>Login</h2>
+
+    {% if message %}
+    <div>{{ message }}</div>
+    {% endif %}
+
+
+    <form class="form-body" action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <input class="form-control" autofocus type="text" name="username" placeholder="Username" required>
+        <input class="form-control" type="password" name="password" placeholder="Password" required>
+        <input class="form-button" type="submit" value="Login">
+    </form>
+
+    <div class="hidden-form">
+        <form action="{% url 'login' %}" method="post" class="mt-5 w-100">
+            {% csrf_token %}
+            <input type="text" name="username" value="Arman" hidden />
+
+            <input name="password" value="arman" type="password" hidden />
+
+            Or a faster way to check out <button class="form-button" type="submit"> My Account</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
