@@ -29,10 +29,10 @@ def index(request):
             listings = Listing.objects.all()
             header = "All Homes" 
         form = FindForm()
-        filter_data = request.session['data']
+        filter_data = request.session.get('data')
         is_house = request.session.get('data')['house']
-        is_condo = request.session['data']['condo']
-        is_townhouse = request.session['data']['townhouse']
+        is_condo = request.session.get('data')['condo']
+        is_townhouse = request.session.get('data')['townhouse']
         return render(request, "my_app/index.html", {
             "listings": reversed(listings),
             "form": form,
@@ -141,8 +141,7 @@ class CreateListing(View):
 
 
 def reset(request):
-    request.session['data'] = {'search': '','bed': '', 'bath': '', 'min': '', 'max': '', 'house': '', 'condo': '',
-        'townhouse': '', 'listing_id': '', 'min_year_built': '', 'max_year_built': ''}
+    request.session['data'] = ''
     return HttpResponseRedirect(reverse("index"))
 
 
