@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+   
   document.addEventListener("click", (e) => {
     const isDropDownButton = e.target.matches(".link");
     if (!isDropDownButton && e.target.closest(".dropdown") != null) return;
@@ -48,13 +49,17 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((res) => res.json())
         .then((result) => {
           if (el.classList.contains("heart")) {
-            console.log("heart");
-            if (document.querySelector(".title").textContent == "Saved") {
-              console.log("removed");
+            if (document.querySelector(".title").textContent === "Saved") {
               el.parentElement.parentElement.remove();
             }
           }
-        });
+        })
+        .catch(() => {
+          el.parentElement.innerHTML = `<p style="color: red">Something went wrong!</p>`
+          setTimeout(() => {
+            document.location.reload()
+          }, 1000)
+        })
     });
   });
 });
