@@ -108,12 +108,12 @@ class UserListing(View):
   
 class Find(View):
     def post(self, request):
+        listings =Listing.objects.all()
         if request.session.get('data')['listing_id']:
-            listings = Listing.objects.filter(id__in=request.session['data']['listing_id'])
-        listings = Listing.objects.filter(address__contains=request.POST['find_input'])
+            listings = listings.filter(id__in=request.session['data']['listing_id'])         
+        listings = listings.filter(address__contains=request.POST['find_input'])
         listings_id = [i.id for i in listings]
-        request.session['data'] = {'search': request.POST['find_input'],'bed': '', 'bath': '', 'min': '',
-             'max': '', 'house': '', 'condo': '','townhouse': '', 'min_year_built': '', 'max_year_built': '', 'listing_id': listings_id}
+        request.session['data'] = {**request.session['data'], 'search': request.POST['find_input'], 'listing_id': listings_id}
         return HttpResponseRedirect(reverse("index"))
 
 
