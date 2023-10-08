@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
    
+  // NAVBAR DROPDOWN LINKS FUNCTIONALITY FOR LARGER SCREENS
   document.addEventListener("click", (e) => {
     const isDropDownButton = e.target.matches(".link");
     if (!isDropDownButton && e.target.closest(".dropdown") != null) return;
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // NAVBAR DROPDOWN LINKS FUNCTIONALITY MOBILE SCREENS
   document.addEventListener("click", (e) => {
     const isDropDownButton = e.target.matches(".link-mobile");
     if (!isDropDownButton && e.target.closest(".dropdown-mobile") != null)
@@ -31,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // TOGGLE SAVE ICON, FETCH SAVE VIEW FROM BACKEND FOR SAVING A LISTING
   document.querySelectorAll(".save").forEach((el) => {
     el.addEventListener("click", (e) => {
       if (el.src == "https://cdn-icons-png.flaticon.com/512/1077/1077035.png") {
