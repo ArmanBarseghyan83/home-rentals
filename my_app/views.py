@@ -9,6 +9,8 @@ from django.views.decorators.cache import cache_control
 
 from .models import User, Listing, TourRequest, Property
 
+
+# Home page to show all listings
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def index(request):
     try:
@@ -47,7 +49,7 @@ def index(request):
         return render(request, "my_app/index.html", {"header": "Something went wrong!"})
     
 
-
+# Individual listing details page
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def listing_details(request, listing_id):
     try:
@@ -75,6 +77,7 @@ def listing_details(request, listing_id):
         })
 
 
+# User's saved listings page
 class Saved(View):
     def get(self, request):
         try:
@@ -91,6 +94,7 @@ class Saved(View):
             return render(request, "my_app/index.html", {"header": "Something went wrong!"})
 
 
+# Listings created by current user
 class UserListing(View):
     def get(self, request):
         try:
@@ -106,6 +110,8 @@ class UserListing(View):
         except:
             return render(request, "my_app/index.html", {"header": "Something went wrong!"})
   
+
+# Filter listings using main search bar.
 class Find(View):
     def post(self, request):
         listings =Listing.objects.all()
@@ -117,6 +123,7 @@ class Find(View):
         return HttpResponseRedirect(reverse("index"))
 
 
+# Create a new listing
 class CreateListing(View):
     def get(self, request):
         form = ListingForm()
@@ -140,11 +147,13 @@ class CreateListing(View):
             })
 
 
+# Delete session data
 def reset(request):
     request.session['data'] = ''
     return HttpResponseRedirect(reverse("index"))
 
 
+# Save a listing
 def save(request, listing_id):
     if  Listing.objects.filter(id=listing_id, saved=request.user):
         Listing.objects.get(id=listing_id).saved.remove(request.user)
@@ -154,6 +163,7 @@ def save(request, listing_id):
         return JsonResponse({"message": "Saved successfully."}, status=201)
 
 
+# Page showing tour requests for the current user's listings.
 def requests(request):
     try:
         if not request.user.is_authenticated:
@@ -168,6 +178,7 @@ def requests(request):
         })
 
     
+# Filter listings using 'Filter' button in navbar.
 def filter(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
@@ -213,7 +224,8 @@ def filter(request):
         'house': request.POST.get('house', False), 'condo': request.POST.get('condo', False),
         'townhouse': request.POST.get('townhouse', False)}
     return HttpResponseRedirect(reverse("index"))
-    
+
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def login_view(request):
     if request.method == "POST":
@@ -232,10 +244,12 @@ def login_view(request):
     else:
         return render(request, "my_app/login.html")
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
+
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def register(request):
